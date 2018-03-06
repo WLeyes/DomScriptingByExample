@@ -36,28 +36,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function createLI(text) {
-    const li  = document.createElement('li');
-    const span = document.createElement('span');
-    span.textContent = text;
-    li.appendChild(span);
+    function createElement(elementName, property, value){
+      const element = document.createElement(elementName);
+      element[property] = value;
+      return element;
+    }
     
-    const label = document.createElement('label');
-    label.textContent = 'Confirmed';
-    
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    
-    label.appendChild(checkbox);
-    li.appendChild(label);
-    
-    const editButton = document.createElement('button');
-    editButton.textContent = 'edit';
-    li.appendChild(editButton);
+    function appendLI(elementName, property, value){
+      const element = createElement(elementName, property, value);
+      li.appendChild(element);
+      return element;
+    }
 
-    const removeButton = document.createElement('button');
-    removeButton.textContent = 'remove';
-    li.appendChild(removeButton);
-    
+    const li  = document.createElement('li');
+    appendLI('span', 'textContent', text); 
+    appendLI('label', 'textContent', 'Confirmed')
+      .appendChild(createElement('input', 'type', 'checkbox'));
+    appendLI('button', 'textContent', 'edit');
+    appendLI('button', 'textContent', 'remove');
     return li;
   }
 
@@ -86,24 +82,44 @@ document.addEventListener('DOMContentLoaded', () => {
       const button = e.target;
       const li = button.parentNode;
       const ul = li.parentNode;
-      if(button.textContent === 'remove') {
-        ul.removeChild(li);
-      } else if(button.textContent === 'edit') {
-        const span = li.firstElementChild;
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = span.textContent;
-        li.insertBefore(input, span);
-        li.removeChild(span);
-        button.textContent = 'save';
-      } else if(button.textContent === 'save') {
-        const input = li.firstElementChild;
-        const span = document.createElement('span');
-        span.textContent = input.value;
-        li.insertBefore(span, input);
-        li.removeChild(input);
-        button.textContent = 'edit';
+      const action = button.textContent;
+      const nameActions = {
+        remove: () => {
+          ul.removeChild(li);
+        },
+        edit: () => {
+          const span = li.firstElementChild;
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = span.textContent;
+          li.insertBefore(input, span);
+          li.removeChild(span);
+          button.textContent = 'save';
+        },
+        save: () => {
+          const input = li.firstElementChild;
+          const span = document.createElement('span');
+          span.textContent = input.value;
+          li.insertBefore(span, input);
+          li.removeChild(input);
+          button.textContent = 'edit';
+        }
       }
+      // select and run action in button's name
+      nameActions[action]();
     }
   });
 });
+
+// todo: validation, confirmation box toggle(target textNodes),
+// notes text area, filter: hide confirmed checkbox when filtered, add unconfirmed filter
+// local storage save state
+
+// helpful links for todo list
+
+// https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace_in_the_DOM
+// https://stackoverflow.com/questions/17195868/what-is-a-text-node-its-uses-document-createtextnode/17196184#17196184
+// https://developer.mozilla.org/en-US/docs/Web/API/Text
+
+// https://teamtreehouse.com/library/using-local-storage-with-javascript
+// https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage
